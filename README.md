@@ -2,5 +2,5 @@
 
 # Steps to run program
 1. Install Python library, PyGame
-  a. pip install pygame
+  1. pip install pygame
   
