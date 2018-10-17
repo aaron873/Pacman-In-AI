@@ -3,8 +3,8 @@
 #import random, os.path
 
 # import basic pygame modules   Tests if pygame is installed
-import pygame
-from pygame.locals import *
+#import pygame
+#from pygame.locals import *
 
 #import scipy
 #import sys, time
