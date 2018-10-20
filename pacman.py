@@ -1,9 +1,18 @@
 import pygame
+import random
 
+
+
+#########################
+# --------------------- #
+# Pacman Class          #
+# Need Description Here #
+# --------------------- #
+#########################
 class Pacman:
-    x = 44
-    y = 44
-    speed = .25
+    x = 40
+    y = 40
+    speed = .1
     
     # Pac-man is AI, but for now I wanted to see how this sprite moved around the level
     def movRight(self):
@@ -17,19 +26,27 @@ class Pacman:
         
     def movDown(self):
         self.y = self.y + self.speed
-        
+      
+
+
+#################################################################
+# ------------------------------------------------------------- #
+# Level Class                                                   #
+# Holds information relating to where Pacman/Ghosts/PacDots are #
+# ------------------------------------------------------------- #
+#################################################################
 class Level:
     def __init__(self):
         self.width = 10
         self.height = 10
         self.level = [1,1,1,1,1,1,1,1,1,1,
                       1,0,0,0,0,0,0,0,0,1,
+                      1,0,0,0,0,0,0,0,0,1,
                       1,0,0,1,0,0,1,0,0,1,
                       1,0,0,1,0,0,1,0,0,1,
                       1,0,0,1,0,0,1,0,0,1,
                       1,0,0,1,0,0,1,0,0,1,
-                      1,0,0,1,0,0,1,0,0,1,
-                      1,0,0,1,0,0,1,0,0,1,
+                      1,0,0,0,0,0,0,0,0,1,
                       1,0,0,0,0,0,0,0,0,1,
                       1,1,1,1,1,1,1,1,1,1,]
 
@@ -45,13 +62,35 @@ class Level:
             if bx > self.width - 1:
                 bx = 0
                 by = by + 1
-                
+ 
+
+
+##################################################
+# ---------------------------------------------- #
+# RunPacman Class                                #
+# Handles the execution of the Pacman In AI Game #
+# ---------------------------------------------- #
+##################################################
 class RunPacman:
     
-    winWidth = 500
-    winHeight = 400
-    pacman = 0    
     
+    ##############################
+    # RunPacman Member Variables #
+    ##############################
+    
+    # Minimum width of the window
+    winWidth = 400
+    
+    # Minimum height of the window
+    winHeight = 400
+    
+    # Pacman object
+    pacman = None    
+    
+    
+    ###############################
+    # RunPacman Class Constructor #
+    ###############################
     def __init__(self):
         self.run = True
         self.display = None
@@ -59,7 +98,14 @@ class RunPacman:
         self.block_image = None
         self.pacman = Pacman()
         self.level = Level()
-        
+       
+
+
+    ############################################################################
+    # Desc: Initializes the program. Draws walls and pacman location           #
+    # Inputs: Reference to self                                                #
+    # Outputs: None                                                            #
+    ############################################################################
     def initGame(self):
         pygame.init()
         self.display = pygame.display.set_mode((self.winWidth, self.winHeight), pygame.HWSURFACE)
@@ -68,33 +114,56 @@ class RunPacman:
         self.pacman_image = pygame.image.load("player.png").convert()
         self.block_image = pygame.image.load("block.png").convert()
         
-    #I don't know what this does but we need it
+        
+        
+    #############################################
+    # Desc: Keeps each frame execution running  #   
+    # Inputs: Reference to self                 #
+    # Outputs: None                             #
+    #############################################
     def on_loop(self):
         pass
-    
-    #updates the window as pacman moves
+
+        
+
+    #############################################
+    # Desc: Updates the Progam graphical window #   
+    # Inputs: Reference to self                 #
+    # Outputs: None                             #
+    #############################################
     def render(self):
         self.display.fill((0,0,0))
         self.display.blit(self.pacman_image, (self.pacman.x, self.pacman.y))
         self.level.draw(self.display, self.block_image)
         pygame.display.flip()
-        
-    #stops the program
+  
+
+  
+    ################################
+    # Desc: Terminates the program #
+    # Inputs: Reference to self    #
+    # Outputs: None                #
+    ################################
     def stopGame(self):
         pygame.quit()
         
+        
+        
+    #####################################################
+    # Desc: Begins and handles execution of the Program #
+    # Inputs: Reference to self                         #
+    # Outputs: None                                     #
+    #####################################################
     def executeGame(self):
         if self.initGame() == False:
             self.run = False
-            
-        #keeps going while the program itself is still running
+         
+        #########################################################################
+        # This loop is called every frame. It is the main loop driving the game #
+        #########################################################################
         while(self.run):
-            
-            #takes in keyboard input (later on we won't use this)
-            for even in pygame.event.get():
-                if even.type == pygame.QUIT: #program exits when the 'x' is clicked on
-                    self.stopGame()
-                    
+           
+            ''' Player Controls for Pacman currently disabled        
             #moves depending on what keys are pressed. Collision does not work (again we won't use this later on)
             keys = pygame.key.get_pressed()
             if (keys[pygame.K_RIGHT]):
@@ -107,18 +176,39 @@ class RunPacman:
                 self.pacman.movUp()
             
             if (keys[pygame.K_DOWN]):
-                self.pacman.movDown()
+                self.pacman.movDown()'''
                 
-            #program willstop running once escape is pressed
+            
+            ##############################################################################
+            # These are executed every frame to check if the user wants to quit the game #
+            ##############################################################################
+            
+            # Exits the Program if user clicks the x window button
+            for even in pygame.event.get():
+                if even.type == pygame.QUIT: 
+                    self.stopGame()
+            
+            # Program will stop running once escape is pressed
+            pygame.event.get()
+            keys = pygame.key.get_pressed()
             if (keys[pygame.K_ESCAPE]):
-                self.run = False
-                
-            #updates the window
+                self.run = False    
+            
+            
+            # Updates the window every frame showing new movements of the AI Agents 
             self.on_loop()
             self.render()
-            
+        
+        
+        
+        # When the game finished running it calls the function to terminate the program
         self.stopGame()
         
+        
+        
+###############################################################
+# The main function that begins running our Pacman-In-AI game #
+###############################################################
 if __name__ == "__main__" :
     game = RunPacman()
     game.executeGame()
