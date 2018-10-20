@@ -111,7 +111,7 @@ class RunPacman:
         self.display = pygame.display.set_mode((self.winWidth, self.winHeight), pygame.HWSURFACE)
         pygame.display.set_caption("Pac-man AI")
         self.run = True
-        self.pacman_image = pygame.image.load("player.png").convert()
+        self.pacman_image = pygame.image.load("imgs\player.png").convert()
         self.block_image = pygame.image.load("block.png").convert()
         
         
@@ -158,6 +158,7 @@ class RunPacman:
         if self.initGame() == False:
             self.run = False
          
+         
         #########################################################################
         # This loop is called every frame. It is the main loop driving the game #
         #########################################################################
@@ -179,6 +180,11 @@ class RunPacman:
                 self.pacman.movDown()'''
                 
             
+            # Updates the window every frame showing new movements of the AI Agents 
+            self.on_loop()
+            self.render()
+            
+            
             ##############################################################################
             # These are executed every frame to check if the user wants to quit the game #
             ##############################################################################
@@ -193,12 +199,6 @@ class RunPacman:
             keys = pygame.key.get_pressed()
             if (keys[pygame.K_ESCAPE]):
                 self.run = False    
-            
-            
-            # Updates the window every frame showing new movements of the AI Agents 
-            self.on_loop()
-            self.render()
-        
         
         
         # When the game finished running it calls the function to terminate the program
