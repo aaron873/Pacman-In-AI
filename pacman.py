@@ -10,9 +10,44 @@ import random
 # --------------------- #
 #########################
 class Pacman:
+    
+    ###########################
+    # Pacman Member Variables #
+    ###########################
+    
+    # Pacman's current location in reference to the graphical window
     x = 40
     y = 40
-    speed = .1
+    
+    # Pacman's current location in reference to the 2D array in Location
+    mapX = 1
+    mapY = 1
+    
+    # Referencing which direction to go
+    right = 0
+    down = 1
+    left = 2
+    up = 3
+    
+    # Direction's effect on movement. Example: if pacman is moving right, idx 0, his y change is 0 and x change is +1.  
+    effectOnXMovement = [1, 0, -1, 0]
+    effectOnYMovement = [0, 1, 0, -1]
+    
+    # Current movement direction and destination. Used when AI moves each frame
+    direction = 0
+    destinationX = 0
+    destinationY = 0
+    currentDirectionStr = ["Right", "Down", "Left", "Up"]
+    
+    # Pacman's speed
+    speed = 0.05
+    
+    # Reference to the Level class to give our Pacman Agent vision of the Environment
+    level = None
+    
+    def __init__(self, input_level):
+        self.level = input_level
+        self.initializeMovement()
     
     # Pac-man is AI, but for now I wanted to see how this sprite moved around the level
     def movRight(self):
@@ -26,9 +61,63 @@ class Pacman:
         
     def movDown(self):
         self.y = self.y + self.speed
-      
+        
+        
+        
+    ############################################################################
+    # Desc: This is a function to get a new randomized movement direction      #
+    # Inputs: Reference to self                                                #
+    # Outputs: None                                                            #
+    ############################################################################   
+    def initializeMovement(self):
+        
+        # Choose a random direction to move in, Right = 0, Down = 1, Left = 2, Up = 3
+        self.direction = random.randrange(0, 4, 1)  
 
+        # Store it in a variable so that the move() function called every frame can move in the correct direction
+        self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
+        self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
+        
+        # Keep looping until a direction without a wall is given
+        while (self.level.level[ self.destinationY ][ self.destinationX ] == 1 ):
+            print("There is a wall to the", self.currentDirectionStr[self.direction])
+            
+            # Read comments above for description
+            self.direction = random.randrange(0, 4, 1)    
+            self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
+            self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
+            
+        # Debug print statement    
+        print("Moving", self.currentDirectionStr[self.direction])        
+     
 
+     
+    ############################################################################
+    # Desc: This function is called from on_loop to move pacman                #
+    # Inputs: Reference to self                                                #
+    # Outputs: None                                                            #
+    ############################################################################   
+    def move(self):
+        
+        # Check if Pacman has reached its movement goal
+        if(abs(self.x - self.destinationX * 40) <= 0.25 and abs(self.y - self.destinationY * 40) <= 0.25):
+            self.initializeMovement()
+            self.mapX = self.destinationX
+            self.mapY = self.destinationY
+        
+        # If he has not reached his goal, keep moving in the right direction
+        else:
+            if(self.direction == self.right):
+                self.movRight()
+            if(self.direction == self.down):
+                self.movDown()
+            if(self.direction == self.left):
+                self.movLeft()
+            if(self.direction == self.up):
+                self.movUp()
+     
+
+     
 #################################################################
 # ------------------------------------------------------------- #
 # Level Class                                                   #
@@ -39,29 +128,25 @@ class Level:
     def __init__(self):
         self.width = 10
         self.height = 10
-        self.level = [1,1,1,1,1,1,1,1,1,1,
-                      1,0,0,0,0,0,0,0,0,1,
-                      1,0,0,0,0,0,0,0,0,1,
-                      1,0,0,1,0,0,1,0,0,1,
-                      1,0,0,1,0,0,1,0,0,1,
-                      1,0,0,1,0,0,1,0,0,1,
-                      1,0,0,1,0,0,1,0,0,1,
-                      1,0,0,0,0,0,0,0,0,1,
-                      1,0,0,0,0,0,0,0,0,1,
-                      1,1,1,1,1,1,1,1,1,1,]
+        self.level =  [[1,1,1,1,1,1,1,1,1,1],
+                       [1,0,0,0,0,0,0,0,0,1],
+                       [1,0,0,0,0,0,0,0,0,1],
+                       [1,0,0,1,0,0,1,0,0,1],
+                       [1,0,0,1,0,0,1,0,0,1],
+                       [1,0,0,1,0,0,1,0,0,1],
+                       [1,0,0,1,0,0,1,0,0,1],
+                       [1,0,0,0,0,0,0,0,0,1],
+                       [1,0,0,0,0,0,0,0,0,1],
+                       [1,1,1,1,1,1,1,1,1,1]]
 
     #draws the level into the window
     def draw(self,display_surf, image_surf):
-        bx = 0
-        by = 0
-        for x in range(0,(self.width * self.height)):
-            if self.level[bx + (by * self.width)] == 1:
-                display_surf.blit(image_surf, (bx * 40, by * 40))
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.level[y][x] == 1:
+                    display_surf.blit(image_surf, (x * 40, y * 40))
                 
-            bx = bx + 1
-            if bx > self.width - 1:
-                bx = 0
-                by = by + 1
+            
  
 
 
@@ -78,14 +163,15 @@ class RunPacman:
     # RunPacman Member Variables #
     ##############################
     
-    # Minimum width of the window
+    # Minimum width and height of the window
     winWidth = 400
-    
-    # Minimum height of the window
     winHeight = 400
     
     # Pacman object
-    pacman = None    
+    pacman = None   
+
+    # Reference to the Level
+    level = None
     
     
     ###############################
@@ -96,8 +182,8 @@ class RunPacman:
         self.display = None
         self.pacman_image = None
         self.block_image = None
-        self.pacman = Pacman()
         self.level = Level()
+        self.pacman = Pacman(self.level)
        
 
 
@@ -122,7 +208,7 @@ class RunPacman:
     # Outputs: None                             #
     #############################################
     def on_loop(self):
-        pass
+        self.pacman.move()
 
         
 
@@ -157,7 +243,6 @@ class RunPacman:
     def executeGame(self):
         if self.initGame() == False:
             self.run = False
-         
          
         #########################################################################
         # This loop is called every frame. It is the main loop driving the game #
