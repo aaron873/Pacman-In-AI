@@ -1,14 +1,11 @@
 import pygame
 import random
 
+#************************************#
+# Pacman Class                       #
+# Need Description Here              #
+#************************************#
 
-
-#########################
-# --------------------- #
-# Pacman Class          #
-# Need Description Here #
-# --------------------- #
-#########################
 class Pacman:
     
     ###########################
@@ -29,7 +26,8 @@ class Pacman:
     left = 2
     up = 3
     
-    # Direction's effect on movement. Example: if pacman is moving right, idx 0, his y change is 0 and x change is +1.  
+    # Direction's effect on movement. 
+    # Example: if pacman is moving right, idx 0, his y change is 0 and x change is +1.  
     effectOnXMovement = [1, 0, -1, 0]
     effectOnYMovement = [0, 1, 0, -1]
     
@@ -45,20 +43,30 @@ class Pacman:
     # Reference to the Level class to give our Pacman Agent vision of the Environment
     level = None
     
+  
+    ###########################
+    # Pacman Member Functions #
+    ###########################
+    
+    
+    # Pacman Class Constructor
     def __init__(self, input_level):
         self.level = input_level
         self.initializeMovement()
     
-    # Pac-man is AI, but for now I wanted to see how this sprite moved around the level
+    # Right movement
     def movRight(self):
         self.x = self.x + self.speed
-        
+    
+    # Left movement    
     def movLeft(self):
         self.x = self.x - self.speed
-        
+    
+    # Up movement    
     def movUp(self):
         self.y = self.y - self.speed
-        
+    
+    # Down movement    
     def movDown(self):
         self.y = self.y + self.speed
         
@@ -118,16 +126,22 @@ class Pacman:
      
 
      
-#################################################################
-# ------------------------------------------------------------- #
+
+#***************************************************************#
 # Level Class                                                   #
 # Holds information relating to where Pacman/Ghosts/PacDots are #
-# ------------------------------------------------------------- #
-#################################################################
+#***************************************************************#
 class Level:
+
+    # Dimensions of 2D array
+    width = 10
+    height = 10
+    
+    # 2D array holding location of everything in the level
+    level = [[]]
+    
+    # Level Class Constructor
     def __init__(self):
-        self.width = 10
-        self.height = 10
         self.level =  [[1,1,1,1,1,1,1,1,1,1],
                        [1,0,0,0,0,0,0,0,0,1],
                        [1,0,0,0,0,0,0,0,0,1],
@@ -139,8 +153,13 @@ class Level:
                        [1,0,0,0,0,0,0,0,0,1],
                        [1,1,1,1,1,1,1,1,1,1]]
 
-    #draws the level into the window
+    ############################################################################
+    # Desc: Need this                                                          #
+    # Inputs: Reference to self, something, something                          #
+    # Outputs: None                                                            #
+    ############################################################################
     def draw(self,display_surf, image_surf):
+        # Loop through the 2D array and place walls on the map where they should be.
         for y in range(self.height):
             for x in range(self.width):
                 if self.level[y][x] == 1:
@@ -150,12 +169,10 @@ class Level:
  
 
 
-##################################################
-# ---------------------------------------------- #
+#************************************************#
 # RunPacman Class                                #
 # Handles the execution of the Pacman In AI Game #
-# ---------------------------------------------- #
-##################################################
+#************************************************#
 class RunPacman:
     
     
@@ -250,7 +267,6 @@ class RunPacman:
         while(self.run):
            
             ''' Player Controls for Pacman currently disabled        
-            #moves depending on what keys are pressed. Collision does not work (again we won't use this later on)
             keys = pygame.key.get_pressed()
             if (keys[pygame.K_RIGHT]):
                  self.pacman.movRight()
@@ -269,11 +285,7 @@ class RunPacman:
             self.on_loop()
             self.render()
             
-            
-            ##############################################################################
-            # These are executed every frame to check if the user wants to quit the game #
-            ##############################################################################
-            
+            # These are executed every frame to check if the user wants to quit the game 
             # Exits the Program if user clicks the x window button
             for even in pygame.event.get():
                 if even.type == pygame.QUIT: 
