@@ -109,9 +109,9 @@ class Pacman:
         
         # Check if Pacman has reached its movement goal
         if(abs(self.x - self.destinationX * 40) <= 0.25 and abs(self.y - self.destinationY * 40) <= 0.25):
-            self.initializeMovement()
             self.mapX = self.destinationX
             self.mapY = self.destinationY
+            self.initializeMovement()
         
         # If he has not reached his goal, keep moving in the right direction
         else:
