@@ -8,8 +8,8 @@
 3. Installing PyBrain, the Reinforcement Learning Library we implemented
    1. Traverse to Pacman-In-AI/libs/pybrain
    > python setup.py install
-2. Installing PyGame library (may not need this)
+2. Installing PyGame library
    > pip install pygame
 5. Run program
-   > python tempFile.py
+   > python pacman.py
   
