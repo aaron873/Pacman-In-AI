@@ -111,8 +111,8 @@ class RunPacman:
         self.display = pygame.display.set_mode((self.winWidth, self.winHeight), pygame.HWSURFACE)
         pygame.display.set_caption("Pac-man AI")
         self.run = True
-        self.pacman_image = pygame.image.load("imgs\player.png").convert()
-        self.block_image = pygame.image.load("imgs\block.png").convert()
+        self.pacman_image = pygame.image.load("imgs\\player.png").convert()
+        self.block_image = pygame.image.load("imgs\\block.png").convert()
         
         
         
