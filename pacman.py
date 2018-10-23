@@ -182,12 +182,19 @@ class Level:
     # Inputs: Reference to self, something, something                          #
     # Outputs: None                                                            #
     ############################################################################
-    def draw(self,display_surf, image_surf):
+    def draw(self, window, image_surf, image_dot):
         # Loop through the 2D array and place walls on the map where they should be.
         for y in range(self.height):
             for x in range(self.width):
+                
+                # If we need to draw a Pac-Dot
                 if self.level[y][x] == 1:
-                    display_surf.blit(image_surf, (x * 40, y * 40))
+                    window.blit(image_surf, (x * 40, y * 40))
+                
+                # If we need to draw a wall
+                if self.level[y][x] == 2:
+                    window.blit(image_dot, (x * 40, y * 40))
+                
                 
             
  
@@ -223,6 +230,7 @@ class RunPacman:
         self.display = None
         self.pacman_image = None
         self.block_image = None
+        self.dot_image = None
         self.level = Level()
         self.pacman = Pacman(self.level)
        
@@ -240,6 +248,7 @@ class RunPacman:
         self.run = True
         self.pacman_image = pygame.image.load("imgs\\player.png").convert()
         self.block_image = pygame.image.load("imgs\\block.png").convert()
+        self.dot_image = pygame.image.load("imgs\\pacDot.png").convert()
         
         
         
@@ -260,8 +269,8 @@ class RunPacman:
     #############################################
     def render(self):
         self.display.fill((0,0,0))
+        self.level.draw(self.display, self.block_image, self.dot_image)
         self.display.blit(self.pacman_image, (self.pacman.x, self.pacman.y))
-        self.level.draw(self.display, self.block_image)
         pygame.display.flip()
   
 
