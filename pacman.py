@@ -56,8 +56,42 @@ class Pacman:
     
     # Pacman Class Constructor
     def __init__(self, input_level):
-        self.level = input_level
+        self.level = input_level  
+        self.randomSpawn()
         self.initializeMovement()
+        
+        
+        
+    #########################################
+    # Randomly Spawning Pacman on the board #
+    #########################################
+    def randomSpawn(self):
+        
+        tempFlag = True
+        spawnX = 0
+        spawnY = 0
+        
+        while tempFlag:
+            spawnX = random.randrange(1, 9, 1)
+            spawnY = random.randrange(1, 9, 1)
+            
+            if(self.level.level[spawnY][spawnX] == 2):
+                print("no wall")
+                self.mapX = spawnX
+                self.mapY = spawnY
+                
+                self.x = self.mapX * 40
+                self.y = self.mapY * 40
+                
+                print(self.mapX)
+                print(self.mapY)
+                
+                self.level.level[self.mapY][self.mapX] = 0
+                
+                tempFlag = False
+                
+                
+                
     
     # Right movement
     def movRight(self):
@@ -92,13 +126,13 @@ class Pacman:
         pacDotDistance = 100
         
         # Loop through all indexes in 2D level array
-        for loopY in range(self.height):
-            for loopX in range(self.width):
+        for loopY in range(self.level.height):
+            for loopX in range(self.level.width):
                 
                 # If there is a pacDot at this index, check to see if its distance is 
                 # closer than the previous minDistance
                 if self.level.level[loopY][loopX] == 2:
-                    tempDistance = math.sqrt( ((self.mapX - loopX) ** 2) + ((self.mapY - loopY) ** 2)) ) 
+                    tempDistance = math.sqrt( ((self.mapX - loopX) ** 2) + ((self.mapY - loopY) ** 2) )  
                     if (tempDistance < pacDotDistance):
                         pacDotDistance = tempDistance
                         self.closestPacDotX = loopX
@@ -115,18 +149,23 @@ class Pacman:
         elif (self.closestPacDotX < self.mapX):
             self.direction = 2
         # If Pacman should move Up
-        else
+        else:
             self.direction = 3
+            
             
         # Set destination vector in 2D array    
         self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
         self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
         
-        #checking for heighgt difference
-            #set self.destinationX and self.destinationY and direction to the movement destination
+        # If there is a wall, randomly choose a new direction until there is no wall
+        while (self.level.level[ self.destinationY ][ self.destinationX ] == 1 ):
+            print("There is a wall to the", self.currentDirectionStr[self.direction])
             
-        #if no height difference check to left to right difference
-            #set self.destinationX and self.destinationY and direction to the movement destination
+            # Read comments above for description
+            self.direction = random.randrange(0, 4, 1)    
+            self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
+            self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
+        
         
         '''
         #######################
@@ -173,7 +212,7 @@ class Pacman:
                 
                 if(self.level.currPacDots == 0):
                     print("Pac-man collected all the Pac-Dots!!!")
-                    self.stopGame()
+                    stopGame()
                     
             
             # Initialize a new random movement
@@ -206,10 +245,13 @@ class Level:
     # 2D array holding location of everything in the level
     level = [[]]
     
+    # Current Pacdots
+    currPacDots = 55
+    
     # Level Class Constructor
     def __init__(self):
         self.level =  [[1,1,1,1,1,1,1,1,1,1],
-                       [1,0,2,2,2,2,2,2,2,1],
+                       [1,2,2,2,2,2,2,2,2,1],
                        [1,2,2,2,2,2,2,2,2,1],
                        [1,2,2,1,2,2,1,2,2,1],
                        [1,2,2,1,2,2,1,2,2,1],
@@ -224,7 +266,7 @@ class Level:
     # Inputs: Reference to self, something, something                          #
     # Outputs: None                                                            #
     ############################################################################
-    def draw(self,display_surf, image_surf):
+    def draw(self,display_surf, image_surf, image_dot):
         # Loop through the 2D array and place walls on the map where they should be.
         for y in range(self.height):
             for x in range(self.width):
@@ -235,7 +277,7 @@ class Level:
                     
                  # If we need to draw a wall
                 if self.level[y][x] == 2:
-                    window.blit(image_dot, (x * 40, y * 40))
+                    display_surf.blit(image_dot, (x * 40, y * 40))
                     
                 
                 
@@ -276,6 +318,8 @@ class RunPacman:
         self.dot_image = None
         self.level = Level()
         self.pacman = Pacman(self.level)
+        #self.pacman.spawn()
+        #print(self.pacman.x,self.pacman.y)
        
 
 
@@ -335,7 +379,7 @@ class RunPacman:
     def executeGame(self):
         if self.initGame() == False:
             self.run = False
-         
+
         #########################################################################
         # This loop is called every frame. It is the main loop driving the game #
         #########################################################################
