@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 #************************************#
 # Pacman Class                       #
@@ -19,6 +20,10 @@ class Pacman:
     # Pacman's current location in reference to the 2D array in Location
     mapX = 1
     mapY = 1
+    
+    #Coordinates for the closest Pac-dot to Pac-Man
+    closestPacDotX = 0
+    closestPacDotY = 0
     
     # Referencing which direction to go
     right = 0
@@ -79,14 +84,36 @@ class Pacman:
     ############################################################################   
     def initializeMovement(self):
         
+        pacDotDistance = 100
         
+        for mapX in range(self.height):
+            for mapY in range(self.width):
+                if self.level[mapX][mapY] == 2:
+                    tempDistance = math.sqrt( ((self.mapX - mapX) ** 2) + ((self.mapY - mapY) ** 2)) ) 
+                    if (tempDistance < pacDotDistance):
+                        pacDotDistance = tempDistance
+                        self.closestPacDotX = mapX
+                        self.closestPacDotY = mapY
         
+        if (self.closestPacDotX < self.mapX):
+            self.direction = 3
+        elif (self.closestPacDotY < self.mapY):
+            self.direction = 2
+        elif (self.closestPacDotX > self.mapX):
+            self.direction = 1
+        else
+            self.direction = 0
+            
+        self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
+        self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
         
+        #checking for heighgt difference
+            #set self.destinationX and self.destinationY and direction to the movement destination
+            
+        #if no height difference check to left to right difference
+            #set self.destinationX and self.destinationY and direction to the movement destination
         
-        
-        
-        
-        
+        '''
         # Choose a random direction to move in, Right = 0, Down = 1, Left = 2, Up = 3
         self.direction = random.randrange(0, 4, 1)  
 
@@ -103,7 +130,7 @@ class Pacman:
             self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
             self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
             
-        # Debug print statement    
+        # Debug print statement    '''
         print("Moving", self.currentDirectionStr[self.direction])        
      
 
@@ -119,22 +146,7 @@ class Pacman:
         if(abs(self.x - self.destinationX * 40) <= 0.25 and abs(self.y - self.destinationY * 40) <= 0.25):
             self.mapX = self.destinationX
             self.mapY = self.destinationY
-            
-            # Check if Pacman ran over a PacDot
-            if(self.level.level[self.destinationY][self.destinationX] == 2):
-                self.level.currPacDots -= 1
-                self.level.level[self.destinationY][self.destinationX] = 0
-                print(self.level.currPacDots)
-                
-                if(self.level.currPacDots == 0):
-                    print("Pac-man collected all the Pac-Dots!!!")
-                    self.stopGame()
-                    
-            
-            # Initialize a new random movement
             self.initializeMovement()
-            
-                
         
         # If he has not reached his goal, keep moving in the right direction
         else:
@@ -145,9 +157,11 @@ class Pacman:
             if(self.direction == self.left):
                 self.movLeft()
             if(self.direction == self.up):
-                self.movUp()   
+                self.movUp()
      
+
      
+
 #***************************************************************#
 # Level Class                                                   #
 # Holds information relating to where Pacman/Ghosts/PacDots are #
@@ -157,9 +171,6 @@ class Level:
     # Dimensions of 2D array
     width = 10
     height = 10
-    
-    # Num pacdots remaining
-    currPacDots = 55
     
     # 2D array holding location of everything in the level
     level = [[]]
@@ -182,19 +193,12 @@ class Level:
     # Inputs: Reference to self, something, something                          #
     # Outputs: None                                                            #
     ############################################################################
-    def draw(self, window, image_surf, image_dot):
+    def draw(self,display_surf, image_surf):
         # Loop through the 2D array and place walls on the map where they should be.
-        for y in range(self.height):
-            for x in range(self.width):
-                
-                # If we need to draw a Pac-Dot
-                if self.level[y][x] == 1:
-                    window.blit(image_surf, (x * 40, y * 40))
-                
-                # If we need to draw a wall
-                if self.level[y][x] == 2:
-                    window.blit(image_dot, (x * 40, y * 40))
-                
+        for x in range(self.height):
+            for y in range(self.width):
+                if self.level[x][y] == 1:
+                    display_surf.blit(image_surf, (x * 40, y * 40))
                 
             
  
@@ -230,7 +234,6 @@ class RunPacman:
         self.display = None
         self.pacman_image = None
         self.block_image = None
-        self.dot_image = None
         self.level = Level()
         self.pacman = Pacman(self.level)
        
@@ -248,7 +251,6 @@ class RunPacman:
         self.run = True
         self.pacman_image = pygame.image.load("imgs\\player.png").convert()
         self.block_image = pygame.image.load("imgs\\block.png").convert()
-        self.dot_image = pygame.image.load("imgs\\pacDot.png").convert()
         
         
         
@@ -269,8 +271,8 @@ class RunPacman:
     #############################################
     def render(self):
         self.display.fill((0,0,0))
-        self.level.draw(self.display, self.block_image, self.dot_image)
         self.display.blit(self.pacman_image, (self.pacman.x, self.pacman.y))
+        self.level.draw(self.display, self.block_image)
         pygame.display.flip()
   
 
