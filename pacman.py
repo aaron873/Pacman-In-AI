@@ -119,7 +119,22 @@ class Pacman:
         if(abs(self.x - self.destinationX * 40) <= 0.25 and abs(self.y - self.destinationY * 40) <= 0.25):
             self.mapX = self.destinationX
             self.mapY = self.destinationY
+            
+            # Check if Pacman ran over a PacDot
+            if(self.level.level[self.destinationY][self.destinationX] == 2):
+                self.level.currPacDots -= 1
+                self.level.level[self.destinationY][self.destinationX] = 0
+                print(self.level.currPacDots)
+                
+                if(self.level.currPacDots == 0):
+                    print("Pac-man collected all the Pac-Dots!!!")
+                    self.stopGame()
+                    
+            
+            # Initialize a new random movement
             self.initializeMovement()
+            
+                
         
         # If he has not reached his goal, keep moving in the right direction
         else:
@@ -130,11 +145,9 @@ class Pacman:
             if(self.direction == self.left):
                 self.movLeft()
             if(self.direction == self.up):
-                self.movUp()
+                self.movUp()   
      
-
      
-
 #***************************************************************#
 # Level Class                                                   #
 # Holds information relating to where Pacman/Ghosts/PacDots are #
@@ -144,6 +157,9 @@ class Level:
     # Dimensions of 2D array
     width = 10
     height = 10
+    
+    # Num pacdots remaining
+    currPacDots = 55
     
     # 2D array holding location of everything in the level
     level = [[]]
