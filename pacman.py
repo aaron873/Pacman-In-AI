@@ -84,26 +84,41 @@ class Pacman:
     ############################################################################   
     def initializeMovement(self):
         
+        '''
+        ################################
+        # Searching Algorithm Movement #
+        ################################
+        '''
         pacDotDistance = 100
         
-        for mapX in range(self.height):
-            for mapY in range(self.width):
-                if self.level[mapX][mapY] == 2:
-                    tempDistance = math.sqrt( ((self.mapX - mapX) ** 2) + ((self.mapY - mapY) ** 2)) ) 
+        # Loop through all indexes in 2D level array
+        for loopY in range(self.height):
+            for loopX in range(self.width):
+                
+                # If there is a pacDot at this index, check to see if its distance is 
+                # closer than the previous minDistance
+                if self.level.level[loopY][loopX] == 2:
+                    tempDistance = math.sqrt( ((self.mapX - loopX) ** 2) + ((self.mapY - loopY) ** 2)) ) 
                     if (tempDistance < pacDotDistance):
                         pacDotDistance = tempDistance
-                        self.closestPacDotX = mapX
-                        self.closestPacDotY = mapY
+                        self.closestPacDotX = loopX
+                        self.closestPacDotY = loopY
         
-        if (self.closestPacDotX < self.mapX):
-            self.direction = 3
-        elif (self.closestPacDotY < self.mapY):
-            self.direction = 2
-        elif (self.closestPacDotX > self.mapX):
-            self.direction = 1
-        else
+        # Get the direction to the closest PacDot
+        # If Pacman should move Right
+        if (self.closestPacDotX > self.mapX):
             self.direction = 0
+        # If Pacman should move Down
+        elif (self.closestPacDotY > self.mapY):
+            self.direction = 1
+        # If Pacman should move Left
+        elif (self.closestPacDotX < self.mapX):
+            self.direction = 2
+        # If Pacman should move Up
+        else
+            self.direction = 3
             
+        # Set destination vector in 2D array    
         self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
         self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
         
@@ -114,6 +129,9 @@ class Pacman:
             #set self.destinationX and self.destinationY and direction to the movement destination
         
         '''
+        #######################
+        # RANDOMIZED MOVEMENT #
+        #######################
         # Choose a random direction to move in, Right = 0, Down = 1, Left = 2, Up = 3
         self.direction = random.randrange(0, 4, 1)  
 
@@ -208,15 +226,15 @@ class Level:
     ############################################################################
     def draw(self,display_surf, image_surf):
         # Loop through the 2D array and place walls on the map where they should be.
-        for x in range(self.height):
-            for y in range(self.width):
+        for y in range(self.height):
+            for x in range(self.width):
                 
                 # If we need to draw a Wall
-                if self.level[x][y] == 1:
+                if self.level[y][x] == 1:
                     display_surf.blit(image_surf, (x * 40, y * 40))
                     
                  # If we need to draw a wall
-                if self.level[x][y] == 2:
+                if self.level[y][x] == 2:
                     window.blit(image_dot, (x * 40, y * 40))
                     
                 
