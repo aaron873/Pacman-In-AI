@@ -73,8 +73,7 @@ class Pacman:
         
         spawnLocations = [[1,1],[1,13],[13,1],[13,13]]
         
-        randomIdx = random.randrange(0, 3, 1)
-            
+        randomIdx = random.randrange(0, 4, 1)
         self.mapX = spawnLocations[randomIdx][0]
         self.mapY = spawnLocations[randomIdx][1]
                 
