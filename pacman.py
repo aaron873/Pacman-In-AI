@@ -1,9 +1,13 @@
 import pygame
 import random
 import math
+from pybrain.rl.learners.valuebased import ActionValueTable
+from pybrain.rl.learners import Q
+from pybrain.rl.agents import LearningAgent
+
 
 #************************************#
-# Pacman Class                       #
+# Pacman Agent Class                 #
 # Need Description Here              #
 #************************************#
 
@@ -15,11 +19,11 @@ class Pacman:
     
     # Pacman's current location in reference to the graphical window
     x = 40
-    y = 40
+    y = 120
     
     # Pacman's current location in reference to the 2D array in Location
     mapX = 1
-    mapY = 1
+    mapY = 3
     
     #Coordinates for the closest Pac-dot to Pac-Man
     closestPacDotX = 0
@@ -45,8 +49,8 @@ class Pacman:
     # Pacman's speed
     speed = 0.05
     
-    # Reference to the Level class to give our Pacman Agent vision of the Environment
-    level = None
+    # Reference to the Environment class to give our Pacman Agent vision of the Environment
+    environment = None
     
   
     ###########################
@@ -55,9 +59,9 @@ class Pacman:
     
     
     # Pacman Class Constructor
-    def __init__(self, input_level):
-        self.level = input_level  
-        self.randomSpawn()
+    def __init__(self, input_environment):
+        self.environment = input_environment  
+        #self.randomSpawn()
         self.initializeMovement()
         
         
@@ -73,9 +77,9 @@ class Pacman:
         
         while tempFlag:
             spawnX = random.randrange(1, 9, 1)
-            spawnY = random.randrange(1, 9, 1)
+            spawnY = random.randrange(1, 6, 1)
             
-            if(self.level.level[spawnY][spawnX] == 2):
+            if(self.environment.environment[spawnY][spawnX] == 2 or self.environment.environment[spawnY][spawnX] == 0):
                 print("no wall")
                 self.mapX = spawnX
                 self.mapY = spawnY
@@ -86,7 +90,7 @@ class Pacman:
                 print(self.mapX)
                 print(self.mapY)
                 
-                self.level.level[self.mapY][self.mapX] = 0
+                self.environment.environment[self.mapY][self.mapX] = 0
                 
                 tempFlag = False
                 
@@ -118,20 +122,20 @@ class Pacman:
     ############################################################################   
     def initializeMovement(self):
         
-        '''
+        
         ################################
         # Searching Algorithm Movement #
         ################################
-        '''
+        
         pacDotDistance = 100
         
-        # Loop through all indexes in 2D level array
-        for loopY in range(self.level.height):
-            for loopX in range(self.level.width):
+        # Loop through all indexes in 2D environment array
+        for loopY in range(self.environment.height):
+            for loopX in range(self.environment.width):
                 
                 # If there is a pacDot at this index, check to see if its distance is 
                 # closer than the previous minDistance
-                if self.level.level[loopY][loopX] == 2:
+                if self.environment.environment[loopY][loopX] == 2:
                     tempDistance = math.sqrt( ((self.mapX - loopX) ** 2) + ((self.mapY - loopY) ** 2) )  
                     if (tempDistance < pacDotDistance):
                         pacDotDistance = tempDistance
@@ -158,13 +162,16 @@ class Pacman:
         self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
         
         # If there is a wall, randomly choose a new direction until there is no wall
-        while (self.level.level[ self.destinationY ][ self.destinationX ] == 1 ):
+        while (self.environment.environment[ self.destinationY ][ self.destinationX ] == 1 ):
             print("There is a wall to the", self.currentDirectionStr[self.direction])
             
             # Read comments above for description
             self.direction = random.randrange(0, 4, 1)    
             self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
             self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
+            
+        #self.mapX = self.destinationX
+        #self.mapY = self.destinationY    
         
         
         '''
@@ -179,7 +186,7 @@ class Pacman:
         self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
         
         # Keep looping until a direction without a wall is given
-        while (self.level.level[ self.destinationY ][ self.destinationX ] == 1 ):
+        while (self.environment.environment[ self.destinationY ][ self.destinationX ] == 1 ):
             print("There is a wall to the", self.currentDirectionStr[self.direction])
             
             # Read comments above for description
@@ -204,13 +211,15 @@ class Pacman:
             self.mapX = self.destinationX
             self.mapY = self.destinationY
             
+            print("Pacman location:",self.mapX,self.mapY)
+            
             # Check if Pacman ran over a PacDot
-            if(self.level.level[self.destinationY][self.destinationX] == 2):
-                self.level.currPacDots -= 1
-                self.level.level[self.destinationY][self.destinationX] = 0
-                print(self.level.currPacDots)
+            if(self.environment.environment[self.destinationY][self.destinationX] == 2):
+                self.environment.currPacDots -= 1
+                self.environment.environment[self.destinationY][self.destinationX] = 0
+                print(self.environment.currPacDots)
                 
-                if(self.level.currPacDots == 0):
+                if(self.environment.currPacDots == 0):
                     print("Pac-man collected all the Pac-Dots!!!")
                     stopGame()
                     
@@ -228,41 +237,224 @@ class Pacman:
                 self.movLeft()
             if(self.direction == self.up):
                 self.movUp()
+
+
+
+#************************************#
+# Ghost Agent Class                  #
+# Need Description Here              #
+#************************************#
+
+class Ghost:
+    
+    ###########################
+    # Ghost Member Variables  #
+    ###########################
+    
+    # Pacman's current location in reference to the graphical window
+    x = 40
+    y = 40
+    
+    # Pacman's current location in reference to the 2D array in Location
+    mapX = 1
+    mapY = 1
+    
+    # Coordinates for the closest Pac-dot to Pac-Man
+    #closestPacDotX = 0
+    #closestPacDotY = 0
+    
+    # Referencing which direction to go
+    right = 0
+    down = 1
+    left = 2
+    up = 3
+    
+    # Direction's effect on movement. 
+    # Example: if pacman is moving right, idx 0, his y change is 0 and x change is +1.  
+    effectOnXMovement = [1, 0, -1, 0]
+    effectOnYMovement = [0, 1, 0, -1]
+    
+    # Current movement direction and destination. Used when AI moves each frame
+    direction = random.randrange(0, 4, 1)
+    destinationX = 0
+    destinationY = 0
+    currentDirectionStr = ["Right", "Down", "Left", "Up"]
+    
+    # Ghosts's speed
+    speed = 0.05
+    
+    # Reference to the Environment class and Pacman to give our Ghost vision of the Environment
+    environment = None
+    pacman = None
+    
+  
+    ###########################
+    # Pacman Member Functions #
+    ###########################
+    
+    
+    # Pacman Class Constructor
+    def __init__(self, input_environment, input_pacman, starting_mapX, starting_mapY):
+        self.environment = input_environment  
+        self.pacman = input_pacman
+        
+        self.mapX = starting_mapX
+        self.x = self.mapX * 40
+        
+        self.mapY = starting_mapY
+        self.y = self.mapY * 40
+        
+        self.direction = random.randrange(0, 4, 1)
+        
+        self.initializeMovement()               
+                
+                
+    
+    # Right movement
+    def movRight(self):
+        self.x = self.x + self.speed
+    
+    # Left movement    
+    def movLeft(self):
+        self.x = self.x - self.speed
+    
+    # Up movement    
+    def movUp(self):
+        self.y = self.y - self.speed
+    
+    # Down movement    
+    def movDown(self):
+        self.y = self.y + self.speed
+        
+        
+        
+    ############################################################################
+    # Desc: This is a function to get a new randomized movement direction      #
+    # Inputs: Reference to self                                                #
+    # Outputs: None                                                            #
+    ############################################################################   
+    def initializeMovement(self):    
+            
+        # Set destination vector in 2D array    
+        self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
+        self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
+        print(self.destinationX, self.destinationY)
+        
+        # If there is a wall change direction
+        while (self.environment.environment[ self.destinationY ][ self.destinationX ] == 1 ):
+            #print("There is a wall to the", self.currentDirectionStr[self.direction])
+            
+            # Up and down movement for testing Q function
+            '''if self.direction == 1:
+                self.direction = 3
+            else:
+                self.direction = 1'''
+            
+            # Random movement
+            self.direction = random.randrange(0, 4, 1)
+                
+            self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
+            self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
+            
+        self.mapX = self.destinationX
+        self.mapY = self.destinationY
      
+    ############################################################################
+    # Desc: This function is called from on_loop to move the ghost             #
+    # Inputs: Reference to self                                                #
+    # Outputs: None                                                            #
+    ############################################################################   
+    def move(self):
+        
+        # Check if the Ghost has reached its movement goal
+        if(abs(self.x - self.destinationX * 40) <= 0.25 and abs(self.y - self.destinationY * 40) <= 0.25):
+            self.mapX = self.destinationX
+            self.mapY = self.destinationY
+            
+            
+            print("Ghost location:",self.mapX,self.mapY)
+            # Check if Ghost ran over Pacman
+            if(self.mapX == self.pacman.mapX and self.mapY == self.pacman.mapY):
+                print("Ghost ran over Pacman!\nGame Over.")
+                stopGame()
+                    
+            
+            # Initialize a new random movement
+            self.initializeMovement()
+        
+        # If he has not reached his goal, keep moving in the right direction
+        else:
+            if(self.direction == self.right):
+                self.movRight()
+            if(self.direction == self.down):
+                self.movDown()
+            if(self.direction == self.left):
+                self.movLeft()
+            if(self.direction == self.up):
+                self.movUp()                
 
      
 
 #***************************************************************#
-# Level Class                                                   #
+# Environment Class                                                   #
 # Holds information relating to where Pacman/Ghosts/PacDots are #
 #***************************************************************#
-class Level:
+class Environment:
 
     # Dimensions of 2D array
-    width = 10
-    height = 10
+    width = 15
+    height = 15
     
-    # 2D array holding location of everything in the level
-    level = [[]]
+    # 2D array holding location of everything in the environment
+    environment = [[]]
     
     # Current Pacdots
-    currPacDots = 55
+    currPacDots = 100
     
-    # Level Class Constructor
+    # Environment Class Constructor
     def __init__(self):
-        self.level =  [[1,1,1,1,1,1,1,1,1,1],
-                       [1,2,2,2,2,2,2,2,2,1],
-                       [1,2,2,2,2,2,2,2,2,1],
-                       [1,2,2,1,2,2,1,2,2,1],
-                       [1,2,2,1,2,2,1,2,2,1],
-                       [1,2,2,1,2,2,1,2,2,1],
-                       [1,2,2,1,2,2,1,2,2,1],
-                       [1,2,2,2,2,2,2,2,2,1],
-                       [1,2,2,2,2,2,2,2,2,1],
-                       [1,1,1,1,1,1,1,1,1,1]]
-
+        ''' Movement Test Environment
+        self.environment =  [[1,1,1,1,1,1,1,1,1,1],
+                            [1,2,2,2,2,2,2,2,2,1],
+                            [1,2,2,2,2,2,2,2,2,1],
+                            [1,2,2,1,2,2,1,2,2,1],
+                            [1,2,2,1,2,2,1,2,2,1],
+                            [1,2,2,1,2,2,1,2,2,1],
+                            [1,2,2,1,2,2,1,2,2,1],
+                            [1,2,2,2,2,2,2,2,2,1],
+                            [1,2,2,2,2,2,2,2,2,1],
+                            [1,1,1,1,1,1,1,1,1,1]]
+        '''
+        
+        ''' Ghost Evasion Environment
+        self.environment = [[1,1,1,1,1,1,1,1,1,1],
+                           [1,0,0,0,0,0,0,0,0,1],
+                           [1,0,0,0,0,0,0,0,0,1],
+                           [1,0,0,0,0,0,0,0,2,1],
+                           [1,0,0,0,0,0,0,0,0,1],
+                           [1,0,0,0,0,0,0,0,0,1],
+                           [1,1,1,1,1,1,1,1,1,1]]
+        '''
+        
+        ''' Standard Pacman Environment '''
+        self.environment = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1],
+                            [1,2,1,1,2,1,2,1,2,1,2,1,1,2,1],
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
+                            [1,2,1,1,2,2,2,2,2,2,2,1,1,2,1],
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
+                            [1,1,1,2,1,1,2,2,2,1,1,2,1,1,1],
+                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1],
+                            [1,1,1,2,1,1,2,2,2,1,1,2,1,1,1],
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
+                            [1,2,1,1,2,2,2,2,2,2,2,1,1,2,1],
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
+                            [1,2,1,1,2,1,2,1,2,1,2,1,1,2,1],
+                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1],
+                            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
+                      
     ############################################################################
-    # Desc: Need this                                                          #
+    # Desc: Draws background and walls                                         #
     # Inputs: Reference to self, something, something                          #
     # Outputs: None                                                            #
     ############################################################################
@@ -272,11 +464,11 @@ class Level:
             for x in range(self.width):
                 
                 # If we need to draw a Wall
-                if self.level[y][x] == 1:
+                if self.environment[y][x] == 1:
                     display_surf.blit(image_surf, (x * 40, y * 40))
                     
                  # If we need to draw a wall
-                if self.level[y][x] == 2:
+                if self.environment[y][x] == 2:
                     display_surf.blit(image_dot, (x * 40, y * 40))
                     
                 
@@ -297,14 +489,17 @@ class RunPacman:
     ##############################
     
     # Minimum width and height of the window
-    winWidth = 400
-    winHeight = 400
+    winWidth = 600
+    winHeight = 600
     
     # Pacman object
     pacman = None   
+    
+    # List of Ghosts
+    ghosts = []
 
-    # Reference to the Level
-    level = None
+    # Reference to the Environment
+    environment = None
     
     
     ###############################
@@ -314,12 +509,19 @@ class RunPacman:
         self.run = True
         self.display = None
         self.pacman_image = None
+        self.ghost_image = None
         self.block_image = None
         self.dot_image = None
-        self.level = Level()
-        self.pacman = Pacman(self.level)
-        #self.pacman.spawn()
-        #print(self.pacman.x,self.pacman.y)
+        
+        # Environment (Environment) and Pacman
+        self.environment = Environment()
+        self.pacman = Pacman(self.environment)
+        
+        # Ghosts
+        self.ghosts.append(Ghost(self.environment, self.pacman, 6, 6))
+        self.ghosts.append(Ghost(self.environment, self.pacman, 6, 8))
+        self.ghosts.append(Ghost(self.environment, self.pacman, 8, 8))
+        self.ghosts.append(Ghost(self.environment, self.pacman, 8, 6))
        
 
 
@@ -334,6 +536,7 @@ class RunPacman:
         pygame.display.set_caption("Pac-man AI")
         self.run = True
         self.pacman_image = pygame.image.load("imgs\\player.png").convert()
+        self.ghost_image = pygame.image.load("imgs\\ghost.png").convert()
         self.block_image = pygame.image.load("imgs\\block.png").convert()
         self.dot_image = pygame.image.load("imgs\\pacDot.png").convert()
         
@@ -345,7 +548,11 @@ class RunPacman:
     #############################################
     def on_loop(self):
         self.pacman.move()
-
+        for ghost in self.ghosts:
+            ghost.move()
+            
+            if self.pacman.mapX == ghost.mapX and self.pacman.mapY == ghost.mapY:
+                endGame()
         
 
     #############################################
@@ -355,8 +562,13 @@ class RunPacman:
     #############################################
     def render(self):
         self.display.fill((0,0,0))
-        self.level.draw(self.display, self.block_image, self.dot_image)
+        self.environment.draw(self.display, self.block_image, self.dot_image)
+        
+        for ghost in self.ghosts:
+            self.display.blit(self.ghost_image, (ghost.x, ghost.y))
+            
         self.display.blit(self.pacman_image, (self.pacman.x, self.pacman.y))
+            
         pygame.display.flip()
   
 
@@ -380,6 +592,11 @@ class RunPacman:
         if self.initGame() == False:
             self.run = False
 
+        # Initialize Reinforcement Learning
+        learner = Q()
+        controller = ActionValueTable(70, 4)
+        agent = LearningAgent(controller, learner)
+            
         #########################################################################
         # This loop is called every frame. It is the main loop driving the game #
         #########################################################################
