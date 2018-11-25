@@ -61,7 +61,7 @@ class Pacman:
     # Pacman Class Constructor
     def __init__(self, input_environment):
         self.environment = input_environment  
-        #self.randomSpawn()
+        self.randomSpawn()
         self.initializeMovement()
         
         
@@ -71,29 +71,20 @@ class Pacman:
     #########################################
     def randomSpawn(self):
         
-        tempFlag = True
-        spawnX = 0
-        spawnY = 0
+        spawnLocations = [[1,1],[1,13],[13,1],[13,13]]
         
-        while tempFlag:
-            spawnX = random.randrange(1, 9, 1)
-            spawnY = random.randrange(1, 6, 1)
+        randomIdx = random.randrange(0, 3, 1)
             
-            if(self.environment.environment[spawnY][spawnX] == 2 or self.environment.environment[spawnY][spawnX] == 0):
-                print("no wall")
-                self.mapX = spawnX
-                self.mapY = spawnY
+        self.mapX = spawnLocations[randomIdx][0]
+        self.mapY = spawnLocations[randomIdx][1]
                 
-                self.x = self.mapX * 40
-                self.y = self.mapY * 40
+        self.x = self.mapX * 40
+        self.y = self.mapY * 40
                 
-                print(self.mapX)
-                print(self.mapY)
-                
-                self.environment.environment[self.mapY][self.mapX] = 0
-                
-                tempFlag = False
-                
+        print(self.mapX)
+        print(self.mapY)
+               
+        self.environment.environment[self.mapY][self.mapX] = 0                                
                 
                 
     
@@ -409,7 +400,7 @@ class Environment:
     environment = [[]]
     
     # Current Pacdots
-    currPacDots = 100
+    currPacDots = 115
     
     # Environment Class Constructor
     def __init__(self):
@@ -438,19 +429,19 @@ class Environment:
         
         ''' Standard Pacman Environment '''
         self.environment = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1],
-                            [1,2,1,1,2,1,2,1,2,1,2,1,1,2,1],
-                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
-                            [1,2,1,1,2,2,2,2,2,2,2,1,1,2,1],
-                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
-                            [1,1,1,2,1,1,2,2,2,1,1,2,1,1,1],
-                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1],
-                            [1,1,1,2,1,1,2,2,2,1,1,2,1,1,1],
-                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
-                            [1,2,1,1,2,2,2,2,2,2,2,1,1,2,1],
-                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1],
-                            [1,2,1,1,2,1,2,1,2,1,2,1,1,2,1],
-                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1],
+                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1], #12
+                            [1,2,1,1,2,1,2,1,2,1,2,1,1,2,1], #6
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1], #10
+                            [1,2,1,1,2,2,2,2,2,2,2,1,1,2,1], #9
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1], #10
+                            [1,1,1,2,1,1,2,2,2,1,1,2,1,1,1], #5
+                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1], #12
+                            [1,1,1,2,1,1,2,2,2,1,1,2,1,1,1], #5
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1], #10
+                            [1,2,1,1,2,2,2,2,2,2,2,1,1,2,1], #9
+                            [1,2,2,2,2,1,2,1,2,1,2,2,2,2,1], #10
+                            [1,2,1,1,2,1,2,1,2,1,2,1,1,2,1], #6
+                            [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1], #12
                             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
                       
     ############################################################################
