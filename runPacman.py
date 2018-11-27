@@ -26,6 +26,8 @@ class RunPacman:
     # Reference to the Environment
     environment = None
     
+    wonGame = -1
+    
     
     ###############################
     # RunPacman Class Constructor #
@@ -41,6 +43,8 @@ class RunPacman:
         # Environment (Environment) and Pacman
         self.environment = environment
         self.pacman = PacmanAgent(self.environment)
+        
+        self.ghosts = []
         
         # Ghosts
         self.ghosts.append(Ghost(self.environment, self.pacman, 6, 6))
@@ -77,6 +81,7 @@ class RunPacman:
             ghost.move()
             
             if self.pacman.mapX == ghost.mapX and self.pacman.mapY == ghost.mapY:
+                print("Ghost ran over Pac-Man")
                 self.run = False
         
 
@@ -152,6 +157,7 @@ class RunPacman:
             if(self.environment.currPacDots == 0):
                 print("Pac-man collected all the Pac-Dots!!!")
                 self.run = False
+                wonGame = 1
                 #stopGame()
             
             # Program will stop running once escape is pressed
@@ -163,3 +169,8 @@ class RunPacman:
         
         # When the game finished running it calls the function to terminate the program
         self.stopGame()
+        
+        
+        
+    def getReward(self):
+        return self.wonGame

@@ -134,9 +134,9 @@ class Ghost:
             
             print("Ghost location:",self.mapX,self.mapY)
             # Check if Ghost ran over Pacman
-            if(self.mapX == self.pacman.mapX and self.mapY == self.pacman.mapY):
-                print("Ghost ran over Pacman!\nGame Over.")
-                stopGame()
+            #if(self.mapX == self.pacman.mapX and self.mapY == self.pacman.mapY):
+                #print("Ghost ran over Pacman!\nGame Over.")
+                #stopGame()
                     
             
             # Initialize a new random movement
