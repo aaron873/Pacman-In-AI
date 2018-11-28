@@ -19,10 +19,6 @@ class Ghost:
     mapX = 1
     mapY = 1
     
-    # Coordinates for the closest Pac-dot to Pac-Man
-    #closestPacDotX = 0
-    #closestPacDotY = 0
-    
     # Referencing which direction to go
     right = 0
     down = 1
@@ -49,7 +45,7 @@ class Ghost:
     
   
     ###########################
-    # Pacman Member Functions #
+    # Ghost  Member Functions #
     ###########################
     
     
@@ -98,7 +94,7 @@ class Ghost:
         # Set destination vector in 2D array    
         self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
         self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
-        print(self.destinationX, self.destinationY)
+        #print(self.destinationX, self.destinationY)
         
         # If there is a wall change direction
         while (self.environment.environment[ self.destinationY ][ self.destinationX ] == 1 ):
@@ -132,7 +128,7 @@ class Ghost:
             self.mapY = self.destinationY
             
             
-            print("Ghost location:",self.mapX,self.mapY)
+            #print("Ghost location:",self.mapX,self.mapY)
             # Check if Ghost ran over Pacman
             #if(self.mapX == self.pacman.mapX and self.mapY == self.pacman.mapY):
                 #print("Ghost ran over Pacman!\nGame Over.")

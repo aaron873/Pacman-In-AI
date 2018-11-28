@@ -23,12 +23,17 @@ class PacmanAgent:
     #Coordinates for the closest Pac-dot to Pac-Man
     closestPacDotX = 0
     closestPacDotY = 0
+    hitDot = False
+    endMovement = False
     
     # Referencing which direction to go
     right = 0
     down = 1
     left = 2
     up = 3
+    
+    # Used for GetSensors() Function
+    actions = [[0.0], [1.0], [2.0], [3.0]]
     
     # Direction's effect on movement. 
     # Example: if pacman is moving right, idx 0, his y change is 0 and x change is +1.  
@@ -57,7 +62,7 @@ class PacmanAgent:
     def __init__(self, input_environment):
         self.environment = input_environment  
         self.randomSpawn()
-        self.initializeMovement()
+        #self.initializeMovement()
         
         
         
@@ -100,7 +105,7 @@ class PacmanAgent:
         
         
         
-    ############################################################################
+    '''############################################################################
     # Desc: This is a function to get a new randomized movement direction      #
     # Inputs: Reference to self                                                #
     # Outputs: None                                                            #
@@ -159,7 +164,7 @@ class PacmanAgent:
         #self.mapY = self.destinationY    
         
         
-        '''
+        ''
         #######################
         # RANDOMIZED MOVEMENT #
         #######################
@@ -179,9 +184,9 @@ class PacmanAgent:
             self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
             self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
             
-        # Debug print statement    '''
+        # Debug print statement    ''
         print("Moving", self.currentDirectionStr[self.direction])        
-     
+        '''
 
      
     ############################################################################
@@ -189,36 +194,40 @@ class PacmanAgent:
     # Inputs: Reference to self                                                #
     # Outputs: None                                                            #
     ############################################################################   
-    def move(self):
+    def move(self, currDirection):
+        
+        #print("CURRENT DIRECTION: ",currDirection)
+        self.destinationX = self.effectOnXMovement[currDirection] + self.mapX
+        self.destinationY = self.effectOnYMovement[currDirection] + self.mapY
         
         # Check if Pacman has reached its movement goal
-        if(abs(self.x - self.destinationX * 40) <= 0.25 and abs(self.y - self.destinationY * 40) <= 0.25):
+        if(abs(self.x - self.destinationX * 40) <= 0.3 and abs(self.y - self.destinationY * 40) <= 0.3):
             self.mapX = self.destinationX
             self.mapY = self.destinationY
             
-            print("Pacman location:",self.mapX,self.mapY)
+            print("Pacman reached goal")
             
             # Check if Pacman ran over a PacDot
-            if(self.environment.environment[self.destinationY][self.destinationX] == 2):
+            if(self.environment.environment[self.mapY][self.mapX] == 2):
                 self.environment.currPacDots -= 1
                 self.environment.environment[self.destinationY][self.destinationX] = 0
                 print(self.environment.currPacDots)
-                
-                if(self.environment.currPacDots == 0):
-                    print("Pac-man collected all the Pac-Dots!!!")
-                    #stopGame()
-                    
             
-            # Initialize a new random movement
-            self.initializeMovement()
+                self.hitDot = True
+                self.environment.directionPacmanMoved = self.actions[self.direction]
+             
+            self.endMovement = True
+            if(self.environment.currPacDots == 0):
+                print("Pac-man collected all the Pac-Dots!!!")
+                    
         
         # If he has not reached his goal, keep moving in the right direction
         else:
-            if(self.direction == self.right):
+            if(currDirection == self.right):
                 self.movRight()
-            if(self.direction == self.down):
+            if(currDirection == self.down):
                 self.movDown()
-            if(self.direction == self.left):
+            if(currDirection == self.left):
                 self.movLeft()
-            if(self.direction == self.up):
+            if(currDirection == self.up):
                 self.movUp()

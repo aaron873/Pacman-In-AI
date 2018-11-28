@@ -14,6 +14,9 @@ class Environment:
     # Current Pacdots
     currPacDots = 115
     
+    # Used for getting Sensor()
+    directionPacmanMoved = None
+    
     # Environment Class Constructor
     def __init__(self):
         ''' Movement Test Environment
@@ -77,10 +80,7 @@ class Environment:
                     
                     
     def getSensors(self):
-        return [1]
-        
-    def getAction():
-        print()
+        return self.directionPacmanMoved
         
     def resetMap(self):
         self.environment = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], # Algorithm: 243 tests

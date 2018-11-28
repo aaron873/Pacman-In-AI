@@ -1,5 +1,7 @@
 from pacmanAgent import PacmanAgent
 from ghost import Ghost
+from random import randrange
+from math import sqrt
 import pygame
 
 #************************************************#
@@ -26,7 +28,8 @@ class RunPacman:
     # Reference to the Environment
     environment = None
     
-    wonGame = -1
+    wonGame = 0
+    reachedGoal = False
     
     
     ###############################
@@ -52,6 +55,7 @@ class RunPacman:
         self.ghosts.append(Ghost(self.environment, self.pacman, 8, 8))
         self.ghosts.append(Ghost(self.environment, self.pacman, 8, 6))
        
+        self.initGame()
 
 
     ############################################################################
@@ -75,14 +79,47 @@ class RunPacman:
     # Inputs: Reference to self                 #
     # Outputs: None                             #
     #############################################
-    def on_loop(self):
-        self.pacman.move()
+    def on_loop(self, action):
+        
+        direction = action
+        '''
+        # Store it in a variable so that the move() function called every frame can move in the correct direction
+        tempX = self.pacman.effectOnXMovement[direction] + self.pacman.mapX
+        tempY = self.pacman.effectOnYMovement[direction] + self.pacman.mapY
+        
+        # Keep looping until a direction without a wall is given
+        while (self.environment.environment[ tempY ][ tempX ] == 1 ):
+            print("There is a wall to the ", self.pacman.currentDirectionStr[direction])
+            self.currReward = -1
+            
+            # Read comments above for description
+            direction = randrange(0, 4, 1)    
+            tempX = self.pacman.effectOnXMovement[direction] + self.pacman.mapX
+            tempY = self.pacman.effectOnYMovement[direction] + self.pacman.mapY
+        '''
+        self.pacman.move(direction)
+        
+        if self.pacman.endMovement == True:
+                
+                self.reachedGoal = True
+                
+                if self.pacman.hitDot == True:
+                    self.currReward = 1
+            
+                self.pacman.endMovement = False
+                self.pacman.hitDot = False
+        
         for ghost in self.ghosts:
             ghost.move()
             
             if self.pacman.mapX == ghost.mapX and self.pacman.mapY == ghost.mapY:
                 print("Ghost ran over Pac-Man")
                 self.run = False
+                self.currReward = -1
+                self.stopGame()
+                self.wonGame = -1
+        
+                
         
 
     #############################################
@@ -118,59 +155,104 @@ class RunPacman:
     # Inputs: Reference to self                         #
     # Outputs: None                                     #
     #####################################################
-    def executeGame(self):
-        if self.initGame() == False:
-            self.run = False
-
+    def executeMove(self, action):
+        #if self.initGame() == False:
+        #   self.run = False
+        
+        self.reachedGoal = False
+        self.currReward = 0
             
         #########################################################################
         # This loop is called every frame. It is the main loop driving the game #
         #########################################################################
-        while(self.run):
-           
-            ''' Player Controls for Pacman currently disabled        
-            keys = pygame.key.get_pressed()
-            if (keys[pygame.K_RIGHT]):
-                 self.pacman.movRight()
-                 
-            if (keys[pygame.K_LEFT]):
-                self.pacman.movLeft()
-                
-            if (keys[pygame.K_UP]):
-                self.pacman.movUp()
-            
-            if (keys[pygame.K_DOWN]):
-                self.pacman.movDown()'''
-                
+        while(not self.reachedGoal and self.run):                
             
             # Updates the window every frame showing new movements of the AI Agents 
-            self.on_loop()
-            self.render()
+            self.on_loop(action)
+            if self.run:
+                self.render()
             
             # These are executed every frame to check if the user wants to quit the game 
             # Exits the Program if user clicks the x window button
-            for even in pygame.event.get():
-                if even.type == pygame.QUIT: 
-                    self.stopGame()
+                for even in pygame.event.get():
+                    if even.type == pygame.QUIT: 
+                        self.stopGame()
+                        exit()
             
-            # CHeck if all dots have been collected
+            # Check if all dots have been collected
             if(self.environment.currPacDots == 0):
                 print("Pac-man collected all the Pac-Dots!!!")
                 self.run = False
-                wonGame = 1
-                #stopGame()
+                self.wonGame = 1
+                self.stopGame()
+        
+        
+    # Makes sure Pac-man does not walk into a wall    
+    def getValidMove(self,direction):
+        
+        # Store it in a variable so that the move() function called every frame can move in the correct direction
+        tempX = self.pacman.effectOnXMovement[direction] + self.pacman.mapX
+        tempY = self.pacman.effectOnYMovement[direction] + self.pacman.mapY
+        
+        # Keep looping until a direction without a wall is given
+        while (self.environment.environment[ tempY ][ tempX ] == 1 ):
+            print("There is a wall to the ", self.pacman.currentDirectionStr[direction])
+            self.currReward = -1
             
-            # Program will stop running once escape is pressed
-            pygame.event.get()
-            keys = pygame.key.get_pressed()
-            if (keys[pygame.K_ESCAPE]):
-                self.run = False    
-        
-        
-        # When the game finished running it calls the function to terminate the program
-        self.stopGame()
-        
-        
-        
+            # Read comments above for description
+            direction = randrange(0, 4, 1)    
+            tempX = self.pacman.effectOnXMovement[direction] + self.pacman.mapX
+            tempY = self.pacman.effectOnYMovement[direction] + self.pacman.mapY
+    
+        return direction
+    
+    
+    # Returns the reward received by Pac-man for its action ***NEEDS TO BE FIXED***
     def getReward(self):
-        return self.wonGame
+    
+        # If Pacman hit a ghost or wall
+        if self.currReward == -1:
+            print("GIVING REWARD: -1")
+            return self.currReward
+        
+        # If pacman hits a pacdot
+        elif self.currReward == 1:
+            # Calculate a reward based on distance to closest ghost
+            distanceToClosestGhost = 1000000
+            
+            for ghost in self.ghosts:
+                tempDistance = sqrt( ((self.pacman.mapX - ghost.mapX) ** 2) + ((self.pacman.mapY - ghost.mapY) ** 2) )
+                if tempDistance < distanceToClosestGhost:
+                    distanceToClosestGhost = tempDistance
+            
+            self.currReward = 1 - distanceToClosestGhost/50
+            print("GIVING REWARD:", self.currReward)
+            
+            return self.currReward
+        
+        # If pacman did not hit anything
+        else:
+            # Calculate a reward based on distance to closest ghost and closest dot
+            distanceToClosestGhost = 1000
+            distanceToClosestDot = 1000 
+            
+            # find distance to closest ghost
+            for ghost in self.ghosts:
+                tempDistance = sqrt( ((self.pacman.mapX - ghost.mapX) ** 2) + ((self.pacman.mapY - ghost.mapY) ** 2) )
+                if tempDistance < distanceToClosestGhost:
+                    distanceToClosestGhost = tempDistance
+                    
+             # Loop through all indexes in 2D environment array
+            for loopY in range(self.environment.height):
+                for loopX in range(self.environment.width):
+                
+                    # If there is a pacDot at this index, check to see if its distance is 
+                    # closer than the previous minDistance
+                    if self.environment.environment[loopY][loopX] == 2:
+                        tempDistance = sqrt( ((self.pacman.mapX - loopX) ** 2) + ((self.pacman.mapY - loopY) ** 2) )  
+                        if (tempDistance < distanceToClosestDot):
+                            distanceToClosestDot = tempDistance
+            
+            self.currReward = distanceToClosestGhost/10 - 0.3 + distanceToClosestDot/5
+            print("GIVING REWARD:", self.currReward)
+            return self.currReward

@@ -4,8 +4,9 @@ import pygame
 
 class PacmanTask(Task):
     
-    def __init__(self, environment):
+    def __init__(self, environment, game):
         self.env = environment
+        self.game = game
         #self.gameReference = RunPacman(environment)
         #self.gameReference.executeGame()
         
@@ -13,11 +14,18 @@ class PacmanTask(Task):
         return self.env.getSensors()
         
     def performAction(self, action):
-        self.env.resetMap()
-        self.gameReference = RunPacman(self.env)
-        self.gameReference.executeGame()
+        #self.env.resetMap()
+        print("PACMAN TAKE ACTION", action)
+        
+        #action = int(action.tolist()[0])
+        action = self.game.getValidMove(int(action.tolist()[0]))
+        print("MOVING: ",action)
+        self.game.executeMove(action)
+        
+        #self.gameReference = RunPacman(self.env)
+        #self.gameReference.executeGame()
         #print("")
         
     def getReward(self):
-        return self.gameReference.getReward()
+        return self.game.getReward()
         
