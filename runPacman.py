@@ -213,7 +213,7 @@ class RunPacman:
         # If Pacman hit a ghost or wall
         if self.currReward == -1:
             print("GIVING REWARD: -1")
-            return self.currReward
+            return -100
         
         # If pacman hits a pacdot
         elif self.currReward == 1:
@@ -221,11 +221,17 @@ class RunPacman:
             distanceToClosestGhost = 1000000
             
             for ghost in self.ghosts:
-                tempDistance = sqrt( ((self.pacman.mapX - ghost.mapX) ** 2) + ((self.pacman.mapY - ghost.mapY) ** 2) )
+                tempDistance = sqrt( ((self.pacman.destinationX - ghost.destinationX) ** 2) + ((self.pacman.destinationY - ghost.destinationY) ** 2) )
                 if tempDistance < distanceToClosestGhost:
                     distanceToClosestGhost = tempDistance
             
-            self.currReward = 1 - distanceToClosestGhost/50
+            
+            if distanceToClosestGhost > 3:
+                self.currReward = 1
+                print("NO GHOST, RAN OVER DOT")
+            else:
+                self.currReward = -0.7 + (distanceToClosestGhost/10)
+                print("RAN OVER DOT, GHOST CLOSE")
             print("GIVING REWARD:", self.currReward)
             
             return self.currReward
@@ -238,7 +244,7 @@ class RunPacman:
             
             # find distance to closest ghost
             for ghost in self.ghosts:
-                tempDistance = sqrt( ((self.pacman.mapX - ghost.mapX) ** 2) + ((self.pacman.mapY - ghost.mapY) ** 2) )
+                tempDistance = sqrt( ((self.pacman.destinationX - ghost.destinationX) ** 2) + ((self.pacman.destinationY - ghost.destinationY) ** 2) )
                 if tempDistance < distanceToClosestGhost:
                     distanceToClosestGhost = tempDistance
                     
@@ -249,10 +255,19 @@ class RunPacman:
                     # If there is a pacDot at this index, check to see if its distance is 
                     # closer than the previous minDistance
                     if self.environment.environment[loopY][loopX] == 2:
-                        tempDistance = sqrt( ((self.pacman.mapX - loopX) ** 2) + ((self.pacman.mapY - loopY) ** 2) )  
+                        tempDistance = sqrt( ((self.pacman.destinationX - loopX) ** 2) + ((self.pacman.destinationY - loopY) ** 2) )  
                         if (tempDistance < distanceToClosestDot):
                             distanceToClosestDot = tempDistance
             
-            self.currReward = distanceToClosestGhost/10 - 0.3 + distanceToClosestDot/5
+            if distanceToClosestGhost > 3:
+                self.currReward = 1/distanceToClosestDot - 0.75 
+                print("NO DOT, NO GHOST")
+            else:
+                print("NO DOT, CLOSE GHOST")
+                print("\nLOOK HERE", (distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
+                self.currReward = ((distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
+                #print("NO DOT, CLOSE GHOST")
+            
+            #self.currReward = distanceToClosestGhost/10 - 0.3 + distanceToClosestDot/5
             print("GIVING REWARD:", self.currReward)
             return self.currReward
