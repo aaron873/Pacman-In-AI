@@ -37,7 +37,7 @@ class Ghost:
     currentDirectionStr = ["Right", "Down", "Left", "Up"]
     
     # Ghosts's speed
-    speed = 0.05
+    speed = 0.1
     
     # Reference to the Environment class and Pacman to give our Ghost vision of the Environment
     environment = None

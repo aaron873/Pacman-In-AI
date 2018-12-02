@@ -47,7 +47,7 @@ class PacmanAgent:
     currentDirectionStr = ["Right", "Down", "Left", "Up"]
     
     # Pacman's speed
-    speed = 0.05
+    speed = 0.1
     
     # Reference to the Environment class to give our Pacman Agent vision of the Environment
     environment = None
