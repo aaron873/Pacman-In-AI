@@ -15,11 +15,11 @@ class PacmanTask(Task):
         
     def performAction(self, action):
         #self.env.resetMap()
-        print("PACMAN TAKE ACTION", action)
+        #print("PACMAN TAKE ACTION", action)
         
         #action = int(action.tolist()[0])
         action = self.game.getValidMove(int(action.tolist()[0]))
-        print("MOVING: ",action)
+        #print("MOVING: ",action)
         self.game.executeMove(action)
         
         #self.gameReference = RunPacman(self.env)

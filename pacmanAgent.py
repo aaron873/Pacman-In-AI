@@ -14,11 +14,11 @@ class PacmanAgent:
     
     # Pacman's current location in reference to the graphical window
     x = 40
-    y = 120
+    y = 40
     
     # Pacman's current location in reference to the 2D array in Location
     mapX = 1
-    mapY = 3
+    mapY = 1
     
     #Coordinates for the closest Pac-dot to Pac-Man
     closestPacDotX = 0
@@ -61,7 +61,7 @@ class PacmanAgent:
     # Pacman Class Constructor
     def __init__(self, input_environment):
         self.environment = input_environment  
-        self.randomSpawn()
+        #self.randomSpawn()
         #self.initializeMovement()
         
         
@@ -205,13 +205,13 @@ class PacmanAgent:
             self.mapX = self.destinationX
             self.mapY = self.destinationY
             
-            print("Pacman reached goal")
+            #print("Pacman reached goal")
             
             # Check if Pacman ran over a PacDot
             if(self.environment.environment[self.mapY][self.mapX] == 2):
                 self.environment.currPacDots -= 1
                 self.environment.environment[self.destinationY][self.destinationX] = 0
-                print(self.environment.currPacDots)
+                #print(self.environment.currPacDots)
             
                 self.hitDot = True
                 self.environment.directionPacmanMoved = self.actions[self.direction]

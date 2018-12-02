@@ -42,6 +42,7 @@ if __name__ == "__main__" :
     task.performAction(np.array([1]))
     
     experiment = Experiment(task, agent)
+    currentGame = 1
     
     while True:
         
@@ -50,14 +51,20 @@ if __name__ == "__main__" :
         
         # Check if current pacman game ended and needs to start a new one
         if game.wonGame == 1 or game.wonGame == -1:
+            
+            print("Game #" + str(currentGame) + "\nDots Collected: " + str(115 - game.environment.currPacDots))
+            print()
+            currentGame += 1
+            
             agent.reset()
             environment.resetMap()
-            game = RunPacman(environment)
+            #game = RunPacman(environment)
+            game.__init__(environment)
             
-            task = PacmanTask(environment, game)
-            task.performAction(np.array([1]))
+            #task = PacmanTask(environment, game)
+            #task.performAction(np.array([1]))
     
-            experiment = Experiment(task, agent)
+            #experiment = Experiment(task, agent)
             
     
     

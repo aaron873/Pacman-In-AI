@@ -46,6 +46,7 @@ class RunPacman:
         # Environment (Environment) and Pacman
         self.environment = environment
         self.pacman = PacmanAgent(self.environment)
+        self.wonGame = 0
         
         self.ghosts = []
         
@@ -113,7 +114,7 @@ class RunPacman:
             ghost.move()
             
             if self.pacman.mapX == ghost.mapX and self.pacman.mapY == ghost.mapY:
-                print("Ghost ran over Pac-Man")
+                #print("Ghost ran over Pac-Man")
                 self.run = False
                 self.currReward = -1
                 self.stopGame()
@@ -196,7 +197,7 @@ class RunPacman:
         
         # Keep looping until a direction without a wall is given
         while (self.environment.environment[ tempY ][ tempX ] == 1 ):
-            print("There is a wall to the ", self.pacman.currentDirectionStr[direction])
+            #print("There is a wall to the ", self.pacman.currentDirectionStr[direction])
             self.currReward = -1
             
             # Read comments above for description
@@ -212,7 +213,7 @@ class RunPacman:
     
         # If Pacman hit a ghost or wall
         if self.currReward == -1:
-            print("GIVING REWARD: -1")
+            #print("GIVING REWARD: -1")
             return -100
         
         # If pacman hits a pacdot
@@ -228,11 +229,11 @@ class RunPacman:
             
             if distanceToClosestGhost > 3:
                 self.currReward = 1
-                print("NO GHOST, RAN OVER DOT")
+                #print("NO GHOST, RAN OVER DOT")
             else:
                 self.currReward = -0.7 + (distanceToClosestGhost/10)
-                print("RAN OVER DOT, GHOST CLOSE")
-            print("GIVING REWARD:", self.currReward)
+                #print("RAN OVER DOT, GHOST CLOSE")
+            #print("GIVING REWARD:", self.currReward)
             
             return self.currReward
         
@@ -260,14 +261,20 @@ class RunPacman:
                             distanceToClosestDot = tempDistance
             
             if distanceToClosestGhost > 3:
-                self.currReward = 1/distanceToClosestDot - 0.75 
-                print("NO DOT, NO GHOST")
+                
+                # Make sure no division by zero
+                if distanceToClosestDot != 0:
+                    self.currReward = 1/distanceToClosestDot - 0.75 
+                
+                else:
+                    self.currReward = 0
+                #print("NO DOT, NO GHOST")
             else:
-                print("NO DOT, CLOSE GHOST")
-                print("\nLOOK HERE", (distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
+                #print("NO DOT, CLOSE GHOST")
+                #print("\nLOOK HERE", (distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
                 self.currReward = ((distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
                 #print("NO DOT, CLOSE GHOST")
             
             #self.currReward = distanceToClosestGhost/10 - 0.3 + distanceToClosestDot/5
-            print("GIVING REWARD:", self.currReward)
+            #print("GIVING REWARD:", self.currReward)
             return self.currReward
