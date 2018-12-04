@@ -11,4 +11,13 @@
    > pip install pygame
 5. Run program
    > python pacman.py
+   
+   
+## Libraries We Used
+The two main libraries we used are:
+1. PyBrain
+   1. Source: Tom Schaul, Justin Bayer, Daan Wierstra, Sun Yi, Martin Felder, Frank Sehnke, Thomas Rückstieß, Jürgen Schmidhuber. PyBrain. To appear in: Journal of Machine Learning Research, 2010.
+
+2. PyGame
+   1. Source: https://www.pygame.org/news
   
