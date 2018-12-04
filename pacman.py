@@ -15,9 +15,6 @@ from runPacman import RunPacman
 from ghost import Ghost
 from pacmanEnvironment import Environment         
                 
-                
-
-        
         
         
 ###############################################################
@@ -33,38 +30,32 @@ if __name__ == "__main__" :
     learner._setExplorer(EpsilonGreedyExplorer(0.0))
     agent = LearningAgent(controller, learner)
     
+    # Setup the PyBrain and PyGame Environments
     environment = Environment()
-    
     game = RunPacman(environment)
-    #game.executeMove(np.ndarray([1]))
     
+    # Create the Task for the Pac-Man Agent to Accomplish and initialize the first Action
     task = PacmanTask(environment, game)
     task.performAction(np.array([1]))
     
     experiment = Experiment(task, agent)
     currentGame = 1
     
+    # Continue to loop program until the 'X' on the GUI is clicked
     while True:
         
+        # Allow the agent to interaction with the environment (Move in a direction) then learn from it.
         experiment.doInteractions(1)
         agent.learn()
         
         # Check if current pacman game ended and needs to start a new one
         if game.wonGame == 1 or game.wonGame == -1:
-            
-            print("Game #" + str(currentGame) + "\nDots Collected: " + str(115 - game.environment.currPacDots))
-            print()
             currentGame += 1
             
+            # Reset the Pac-Man game, the environment, and the currently stored information
             agent.reset()
             environment.resetMap()
-            #game = RunPacman(environment)
             game.__init__(environment)
-            
-            #task = PacmanTask(environment, game)
-            #task.performAction(np.array([1]))
-    
-            #experiment = Experiment(task, agent)
             
     
     
