@@ -1,10 +1,11 @@
 from random import randrange
 from math import sqrt
 
-#************************************#
-# Pacman Agent Class                 #
-# Need Description Here              #
-#************************************#
+#**********************************************************************************#
+# Pacman Agent Class                                                               #
+# This is the Pacman Agent class, representing the Pac-Man Agent that implements   #
+# one of three movement algorithms to traverse the environment collecting Pac-Dots #
+#**********************************************************************************#
 
 class PacmanAgent:
     
@@ -61,14 +62,14 @@ class PacmanAgent:
     # Pacman Class Constructor
     def __init__(self, input_environment):
         self.environment = input_environment  
-        #self.randomSpawn()
-        #self.initializeMovement()
         
         
         
-    #########################################
-    # Randomly Spawning Pacman on the board #
-    #########################################
+    #################################################
+    # Randomly Spawning Pacman on the board         #
+    # This function is currently not used since     # 
+    # we spawn Pacman in the same location each time#
+    #################################################
     def randomSpawn(self):
         
         spawnLocations = [[1,1],[1,13],[13,1],[13,13]]
@@ -104,18 +105,19 @@ class PacmanAgent:
         self.y = self.y + self.speed
         
         
-        
-    '''############################################################################
-    # Desc: This is a function to get a new randomized movement direction      #
-    # Inputs: Reference to self                                                #
-    # Outputs: None                                                            #
-    ############################################################################   
+    '''    
+    ####################################################################################################
+    # Desc: This is a function to get a new randomized or breadth-first search movement direction.     #
+    #       Currently not used since the program is implementing Q-Learning.                           # 
+    # Inputs: Reference to self                                                                        #
+    # Outputs: None                                                                                    #
+    ####################################################################################################   
     def initializeMovement(self):
         
         
-        ################################
-        # Searching Algorithm Movement #
-        ################################
+        ##############################################
+        # Breadth-First Searching Algorithm Movement #
+        ##############################################
         
         pacDotDistance = 100
         
@@ -196,7 +198,6 @@ class PacmanAgent:
     ############################################################################   
     def move(self, currDirection):
         
-        #print("CURRENT DIRECTION: ",currDirection)
         self.destinationX = self.effectOnXMovement[currDirection] + self.mapX
         self.destinationY = self.effectOnYMovement[currDirection] + self.mapY
         
@@ -205,18 +206,17 @@ class PacmanAgent:
             self.mapX = self.destinationX
             self.mapY = self.destinationY
             
-            #print("Pacman reached goal")
-            
             # Check if Pacman ran over a PacDot
             if(self.environment.environment[self.mapY][self.mapX] == 2):
                 self.environment.currPacDots -= 1
                 self.environment.environment[self.destinationY][self.destinationX] = 0
-                #print(self.environment.currPacDots)
             
                 self.hitDot = True
                 self.environment.directionPacmanMoved = self.actions[self.direction]
              
             self.endMovement = True
+            
+            # If there are no more remaining Pac-Dots
             if(self.environment.currPacDots == 0):
                 print("Pac-man collected all the Pac-Dots!!!")
                     
