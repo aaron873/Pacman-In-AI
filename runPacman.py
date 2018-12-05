@@ -132,6 +132,7 @@ class RunPacman:
             self.display.blit(self.ghost_image, (ghost.x, ghost.y))
             
         self.display.blit(self.pacmanImgs[self.pacman.direction], (self.pacman.x, self.pacman.y))
+        print(self.pacman.direction)
             
         pygame.display.flip()
   
