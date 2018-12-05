@@ -1,7 +1,7 @@
 # Pacman-In-AI
 
 ## Steps to run program
-1. Clone our project repository
+1. Clone our project repository (Unless already you already have the zip folder)
    > git clone --recursive https://github.com/aaron873/Pacman-In-AI.git
 2. Install Python 3.6.5 or any newer version
 3. Installing PyBrain, the Reinforcement Learning Library we implemented
@@ -17,6 +17,7 @@
 The two main libraries we used are:
 1. PyBrain
    1. Source: Tom Schaul, Justin Bayer, Daan Wierstra, Sun Yi, Martin Felder, Frank Sehnke, Thomas Rückstieß, Jürgen Schmidhuber. PyBrain. To appear in: Journal of Machine Learning Research, 2010.
+   2. http://pybrain.org/
 
 2. PyGame
    1. Source: https://www.pygame.org/news
