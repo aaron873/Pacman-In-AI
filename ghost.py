@@ -1,9 +1,12 @@
 from random import randrange
 
-#************************************#
-# Ghost Agent Class                  #
-# Need Description Here              #
-#************************************#
+#***************************************************************#
+# Ghost Agent Class                                             #
+# This is the Ghost Class, representing a Pac-Ghost in Pac-Man. #
+# The Ghost will move in one direction until it hits a wall,    #
+# it is then given a new direction to continue moving in.       #
+# If a Ghost runs over Pac-Man the game is over.                # 
+#***************************************************************#
 
 class Ghost:
     
@@ -51,6 +54,8 @@ class Ghost:
     
     # Pacman Class Constructor
     def __init__(self, input_environment, input_pacman, starting_mapX, starting_mapY):
+        
+        # Initialize Needed variables
         self.environment = input_environment  
         self.pacman = input_pacman
         
@@ -62,6 +67,7 @@ class Ghost:
         
         self.direction = randrange(0, 4, 1)
         
+        # Starts Ghost's movement
         self.initializeMovement()               
                 
                 
@@ -94,17 +100,9 @@ class Ghost:
         # Set destination vector in 2D array    
         self.destinationX = self.effectOnXMovement[self.direction] + self.mapX
         self.destinationY = self.effectOnYMovement[self.direction] + self.mapY
-        #print(self.destinationX, self.destinationY)
         
-        # If there is a wall change direction
+        # If there is a wall, change direction
         while (self.environment.environment[ self.destinationY ][ self.destinationX ] == 1 ):
-            #print("There is a wall to the", self.currentDirectionStr[self.direction])
-            
-            # Up and down movement for testing Q function
-            '''if self.direction == 1:
-                self.direction = 3
-            else:
-                self.direction = 1'''
             
             # Random movement
             self.direction = randrange(0, 4, 1)
@@ -115,6 +113,8 @@ class Ghost:
         self.mapX = self.destinationX
         self.mapY = self.destinationY
      
+    
+    
     ############################################################################
     # Desc: This function is called from on_loop to move the ghost             #
     # Inputs: Reference to self                                                #
@@ -127,15 +127,7 @@ class Ghost:
             self.mapX = self.destinationX
             self.mapY = self.destinationY
             
-            
-            #print("Ghost location:",self.mapX,self.mapY)
-            # Check if Ghost ran over Pacman
-            #if(self.mapX == self.pacman.mapX and self.mapY == self.pacman.mapY):
-                #print("Ghost ran over Pacman!\nGame Over.")
-                #stopGame()
-                    
-            
-            # Initialize a new random movement
+            # Gives ghost a new direction to move
             self.initializeMovement()
         
         # If he has not reached his goal, keep moving in the right direction
