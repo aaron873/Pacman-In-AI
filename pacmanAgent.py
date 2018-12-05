@@ -198,6 +198,7 @@ class PacmanAgent:
     ############################################################################   
     def move(self, currDirection):
         
+        self.direction = currDirection
         self.destinationX = self.effectOnXMovement[currDirection] + self.mapX
         self.destinationY = self.effectOnYMovement[currDirection] + self.mapY
         
