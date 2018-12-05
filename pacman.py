@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 import numpy as np
+
 from pybrain.rl.learners.valuebased import ActionValueTable
 from pybrain.rl.learners import Q
 from pybrain.rl.agents import LearningAgent
@@ -9,7 +10,6 @@ from pybrain.rl.experiments import Experiment
 from pybrain.rl.explorers import EpsilonGreedyExplorer
 
 from pacmanTask import PacmanTask
-
 from pacmanAgent import PacmanAgent
 from runPacman import RunPacman
 from ghost import Ghost
