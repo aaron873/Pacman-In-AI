@@ -22,6 +22,7 @@ from pacmanEnvironment import Environment
 ###############################################################
 if __name__ == "__main__" :
     
+    # Initialize our Action-Environment-Reward Table
     controller = ActionValueTable(196, 4)
     controller.initialize(0.)
     
