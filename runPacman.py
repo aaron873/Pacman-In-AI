@@ -83,21 +83,6 @@ class RunPacman:
     def on_loop(self, action):
         
         direction = action
-        '''
-        # Store it in a variable so that the move() function called every frame can move in the correct direction
-        tempX = self.pacman.effectOnXMovement[direction] + self.pacman.mapX
-        tempY = self.pacman.effectOnYMovement[direction] + self.pacman.mapY
-        
-        # Keep looping until a direction without a wall is given
-        while (self.environment.environment[ tempY ][ tempX ] == 1 ):
-            print("There is a wall to the ", self.pacman.currentDirectionStr[direction])
-            self.currReward = -1
-            
-            # Read comments above for description
-            direction = randrange(0, 4, 1)    
-            tempX = self.pacman.effectOnXMovement[direction] + self.pacman.mapX
-            tempY = self.pacman.effectOnYMovement[direction] + self.pacman.mapY
-        '''
         self.pacman.move(direction)
         
         if self.pacman.endMovement == True:
@@ -157,8 +142,6 @@ class RunPacman:
     # Outputs: None                                     #
     #####################################################
     def executeMove(self, action):
-        #if self.initGame() == False:
-        #   self.run = False
         
         self.reachedGoal = False
         self.currReward = 0
@@ -188,7 +171,11 @@ class RunPacman:
                 self.stopGame()
         
         
-    # Makes sure Pac-man does not walk into a wall    
+    ######################################################
+    # Desc: Makes sure Pac-Man does not walk into a wall #
+    # Inputs: Reference to self                          #
+    # Outputs: None                                      #
+    ######################################################     
     def getValidMove(self,direction):
         
         # Store it in a variable so that the move() function called every frame can move in the correct direction
@@ -207,17 +194,23 @@ class RunPacman:
     
         return direction
     
-    
-    # Returns the reward received by Pac-man for its action ***NEEDS TO BE FIXED***
+ 
+
+    ###############################################################
+    # Desc: Returns the reward received by Pac-man for its action #
+    #       Calculated based on closest dot and closest ghost.    #
+    # Inputs: Reference to self                                   #
+    # Outputs: None                                               #
+    ###############################################################
     def getReward(self):
     
         # If Pacman hit a ghost or wall
         if self.currReward == -1:
-            #print("GIVING REWARD: -1")
             return -100
         
         # If pacman hits a pacdot
         elif self.currReward == 1:
+           
             # Calculate a reward based on distance to closest ghost
             distanceToClosestGhost = 1000000
             
@@ -229,16 +222,15 @@ class RunPacman:
             
             if distanceToClosestGhost > 3:
                 self.currReward = 1
-                #print("NO GHOST, RAN OVER DOT")
+
             else:
                 self.currReward = -0.7 + (distanceToClosestGhost/10)
-                #print("RAN OVER DOT, GHOST CLOSE")
-            #print("GIVING REWARD:", self.currReward)
             
             return self.currReward
         
         # If pacman did not hit anything
         else:
+            
             # Calculate a reward based on distance to closest ghost and closest dot
             distanceToClosestGhost = 1000
             distanceToClosestDot = 1000 
@@ -268,13 +260,7 @@ class RunPacman:
                 
                 else:
                     self.currReward = 0
-                #print("NO DOT, NO GHOST")
             else:
-                #print("NO DOT, CLOSE GHOST")
-                #print("\nLOOK HERE", (distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
                 self.currReward = ((distanceToClosestDot/50) - (1 - (distanceToClosestGhost/10)))
-                #print("NO DOT, CLOSE GHOST")
-            
-            #self.currReward = distanceToClosestGhost/10 - 0.3 + distanceToClosestDot/5
-            #print("GIVING REWARD:", self.currReward)
+
             return self.currReward
