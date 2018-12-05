@@ -39,6 +39,7 @@ if __name__ == "__main__" :
     task = PacmanTask(environment, game)
     task.performAction(np.array([1]))
     
+    # The Experiment is the PyBrain link between the task to be completed and the agent completing it
     experiment = Experiment(task, agent)
     currentGame = 1
     
@@ -53,7 +54,9 @@ if __name__ == "__main__" :
         if game.wonGame == 1 or game.wonGame == -1:
             currentGame += 1
             
-            # Reset the Pac-Man game, the environment, and the currently stored information
+            # Store the information the agent has learned in long term memory,
+            # Clear the short term memory to reduce any chance of overfitting,
+            # Reset the Pac-Man game, and the environment for the next game test
             agent.reset()
             environment.resetMap()
             game.__init__(environment)
