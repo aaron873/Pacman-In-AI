@@ -38,7 +38,11 @@ class RunPacman:
     def __init__(self, environment):
         self.run = True
         self.display = None
-        self.pacman_image = None
+        self.pacmanImgs = None
+        self.pacmanRight_image = None
+        self.pacmanDown_image = None
+        self.pacmanLeft_image = None
+        self.pacmanUp_image = None
         self.ghost_image = None
         self.block_image = None
         self.dot_image = None
@@ -69,7 +73,11 @@ class RunPacman:
         self.display = pygame.display.set_mode((self.winWidth, self.winHeight), pygame.HWSURFACE)
         pygame.display.set_caption("Pac-man AI")
         self.run = True
-        self.pacman_image = pygame.image.load("imgs\\player.png").convert()
+        self.pacmanRight_image = pygame.image.load("imgs\\playerRight.png").convert()
+        self.pacmanDown_image = pygame.image.load("imgs\\playerDown.png").convert()
+        self.pacmanLeft_image = pygame.image.load("imgs\\playerLeft.png").convert()
+        self.pacmanUp_image = pygame.image.load("imgs\\playerUp.png").convert()
+        self.pacmanImgs = [self.pacmanRight_image, self.pacmanDown_image, self.pacmanLeft_image, self.pacmanUp_image]
         self.ghost_image = pygame.image.load("imgs\\ghost.png").convert()
         self.block_image = pygame.image.load("imgs\\block.png").convert()
         self.dot_image = pygame.image.load("imgs\\pacDot.png").convert()
@@ -85,10 +93,12 @@ class RunPacman:
         direction = action
         self.pacman.move(direction)
         
+        # If pacman has reached his goal
         if self.pacman.endMovement == True:
                 
                 self.reachedGoal = True
                 
+                # If pacman has ran over a dot
                 if self.pacman.hitDot == True:
                     self.currReward = 1
             
@@ -98,8 +108,9 @@ class RunPacman:
         for ghost in self.ghosts:
             ghost.move()
             
+            # If a ghost runs over pacman
             if self.pacman.mapX == ghost.mapX and self.pacman.mapY == ghost.mapY:
-                #print("Ghost ran over Pac-Man")
+                
                 self.run = False
                 self.currReward = -1
                 self.stopGame()
@@ -120,7 +131,7 @@ class RunPacman:
         for ghost in self.ghosts:
             self.display.blit(self.ghost_image, (ghost.x, ghost.y))
             
-        self.display.blit(self.pacman_image, (self.pacman.x, self.pacman.y))
+        self.display.blit(self.pacmanImgs[self.pacman.direction], (self.pacman.x, self.pacman.y))
             
         pygame.display.flip()
   
