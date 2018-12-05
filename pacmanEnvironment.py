@@ -1,7 +1,7 @@
-#***************************************************************#
-# Environment Class                                                   #
-# Holds information relating to where Pacman/Ghosts/PacDots are #
-#***************************************************************#
+#****************************************************************#
+# Environment Class                                              #
+# Holds information relating to where Pacman/Ghosts/PacDots are. #
+#****************************************************************#
 class Environment:
 
     # Dimensions of 2D array
